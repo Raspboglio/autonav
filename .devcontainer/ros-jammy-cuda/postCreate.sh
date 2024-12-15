@@ -1,0 +1,1 @@
+echo "source /opt/ros/jazzy/setup.bash" >> ~root/.bashrc

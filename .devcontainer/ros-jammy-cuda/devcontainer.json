@@ -1,0 +1,76 @@
+{
+    // Change the name here
+    "name": "ROS2 jammy cuda",
+    "image": "raspboglio/ros-jammy-cuda:0.1",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+
+    // "remoteUser": "raspboglio",
+    // Mount ../ to workspaces to support worktrees, this is required for submodules in worktrees
+    "workspaceMount": "source=${env:HOME}${env:USERPROFILE}/,target=/workspaces/,type=bind",
+    "postCreateCommand": "./.devcontainer/ros-jammy-cuda/postCreate.sh",
+    // Custom arguments uses when running the container
+    "runArgs": [
+        // This will allow you to use a ptrace-based debugger like C++, Go, and Rust.
+        "--cap-add=SYS_PTRACE",
+        "--security-opt",
+        "seccomp=unconfined",
+        // Mount .ssh folder so it's easy to use git clone ssh://
+        "-v",
+        "${env:HOME}${env:USERPROFILE}/.ssh:/home/raspboglio/.ssh",
+        // Mount media folder to read external drives
+        "-v",
+        "/media:/media",
+        "-v",
+        "/dev/:/dev/",
+        // Enable graphics
+        "-e",
+        "DISPLAY=${env:DISPLAY}",
+        "--volume=${env:HOME}/.Xauthority:/home/raspboglio/.Xauthority:rw",
+        "--privileged",
+        // Use the same network as the host
+        "--net=host",
+        // GPU arguments. If you don't have nvidia-docker installed and working,
+        // it will fail.
+        "--gpus=all",
+        "-e",
+        "NVIDIA_VISIBLE_DEVICES=all",
+        "-e",
+        "NVIDIA_DRIVER_CAPABILITIES=all",
+        // Disable annoing core files
+        "--ulimit",
+        "core=0",
+        // Default shared memory size. Lower values break iceoryx (if used)
+        "--shm-size=10g"
+    ],
+    // // Add the IDs of extensions you want installed when the container is created.
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "eamodio.gitlens",
+                "twxs.cmake",
+                "mhutchie.git-graph",
+                "xaver.clang-format",
+                "shardulm94.trailing-spaces",
+                "ms-python.python",
+                "asciidoctor.asciidoctor-vscode",
+                "llvm-vs-code-extensions.vscode-clangd",
+                "cschlosser.doxdocgen",
+                "ms-python.pylint",
+                "cheshirekow.cmake-format",
+                "codeium.codeium",
+                "ms-python.black-formatter"
+            ]
+        }
+    },
+    "containerEnv": {
+        "DISPLAY": "${env:DISPLAY}"
+    },
+    "remoteEnv": {
+        "DISPLAY": "${env:DISPLAY}"
+    },
+    "mounts": [
+        // Mount ../ to the same real path inside the container, required for worktrees
+        "source=${env:HOME}${env:USERPROFILE}/,target=${localWorkspaceFolder}/../,type=bind",
+    ]
+}
