@@ -24,15 +24,15 @@ sudo apt-get install \
     libceres-dev
 
 # Fixing bug?
-sudo apt-get install gcc-10 g++-10
-export CC=/usr/bin/gcc-10
-export CXX=/usr/bin/g++-10
-export CUDAHOSTCXX=/usr/bin/g++-10
+# sudo apt-get install gcc-10 g++-10
+# export CC=/usr/bin/gcc-10
+# export CXX=/usr/bin/g++-10
+# export CUDAHOSTCXX=/usr/bin/g++-10
 
 git clone https://github.com/colmap/colmap.git
 cd colmap
 mkdir build
 cd build
 
-cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
 make -j5
