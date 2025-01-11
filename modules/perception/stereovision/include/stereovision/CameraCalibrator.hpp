@@ -4,6 +4,7 @@
 #include <colmap/feature/matcher.h>
 #include <colmap/feature/sift.h>
 
+#include <memory>
 #include <opencv2/opencv.hpp>
 #include <utils/StereoImage.hpp>
 #include <vector>
@@ -24,9 +25,23 @@ class CameraCalibrator {
 
   bool calibrate();
 
+  /**!
+   *@brief Print results in specified directory
+   *@param aPath Directory to print results in, if none is specified, the
+   *current directory is used.
+   */
+  void printFeatures(std::string aPath = ".");
+
  private:
   std::unique_ptr<colmap::FeatureExtractor> mExtractor;
   std::unique_ptr<colmap::FeatureMatcher> mMatcher;
+
+  std::vector<std::shared_ptr<colmap::FeatureKeypoints>> mLeftKeypoints;
+  std::vector<std::shared_ptr<colmap::FeatureKeypoints>> mRightKeypoints;
+  std::vector<std::shared_ptr<colmap::FeatureDescriptors>> mLeftDescriptors;
+  std::vector<std::shared_ptr<colmap::FeatureDescriptors>> mRightDescriptors;
+
+  std::vector<std::shared_ptr<colmap::FeatureMatches>> mMatches;
 
   std::vector<autonav::utils::StereoImage::UniquePtr> mStereoImages;
 };
