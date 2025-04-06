@@ -1,3 +1,5 @@
+#include <feature/ORBFeatureExtractor.hpp>
+#include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/opencv.hpp>
 #include <stereovision/CameraCalibrator.hpp>
@@ -40,19 +42,26 @@ int main(int argc, char** argv) {
 
   bool imageFound = true;
   size_t imageIndex = 1;
+
   while (imageFound && imageIndex < MAX_IMAGES) {
     cv::Mat left, right;
-    left = cv::imread(datasetPath + "/camera" + std::to_string(imageIndex) + "0.png", cv::IMREAD_COLOR);
-    if(left.data==NULL){
-        imageFound=false;
-        std::cout << "[cameraExtractionTest]: Read up to index " << imageIndex - 1 << std::endl;
-        break;
+    left = cv::imread(
+        datasetPath + "/camera" + std::to_string(imageIndex) + "0.png",
+        cv::IMREAD_COLOR);
+    if (left.data == NULL) {
+      imageFound = false;
+      std::cout << "[cameraExtractionTest]: Read up to index " << imageIndex - 1
+                << std::endl;
+      break;
     }
-    right = cv::imread(datasetPath + "/camera" + std::to_string(imageIndex) + "1.png", cv::IMREAD_COLOR);
-    if(right.data==NULL){
-        imageFound=false;
-        std::cout << "[cameraExtractionTest]: Read up to index " << imageIndex - 1 << std::endl;
-        break;
+    right = cv::imread(
+        datasetPath + "/camera" + std::to_string(imageIndex) + "1.png",
+        cv::IMREAD_COLOR);
+    if (right.data == NULL) {
+      imageFound = false;
+      std::cout << "[cameraExtractionTest]: Read up to index " << imageIndex - 1
+                << std::endl;
+      break;
     }
     autonav::utils::StereoImage::UniquePtr image =
         std::make_unique<autonav::utils::StereoImage>(left, right);
@@ -60,10 +69,34 @@ int main(int argc, char** argv) {
 
     imageIndex++;
   }
-  if(imageIndex == MAX_IMAGES){
-      std::cout << "[CameraExtractionTest]: Max images reached" << std::endl;
+  if (imageIndex == MAX_IMAGES) {
+    std::cout << "[CameraExtractionTest]: Max images reached" << std::endl;
   }
-  calibrator.calibrate();
-  calibrator.printFeatures(resultPath);
+  // calibrator.calibrate();
+  // calibrator.printFeatures(resultPath);
+
+  std::cout << "[CameraExtractionTest]: Reading image" << std::endl;
+  cv::Mat orbImage =
+      cv::imread(datasetPath + "/camera10.png", cv::IMREAD_COLOR);
+
+  autonav::feature::ORBFeatureExtractorParams::Ptr params =
+      std::make_shared<autonav::feature::ORBFeatureExtractorParams>();
+  params->backendCuda = true;
+  autonav::feature::ORBFeatureExtractor extractor(params);
+
+  std::vector<cv::KeyPoint> keypoints;
+  std::vector<cv::Mat> descriptors;
+  std::cout << "[CameraExtractionTest]: Extracting features" << std::endl;
+  extractor.extractFeatures(orbImage.clone(), keypoints, descriptors);
+
+  cv::Mat featureImage = orbImage.clone();
+  std::cout << "[CameraExtractionTest]: Drawing keypoints: " << keypoints.size() << std::endl;
+  for(const auto keypoint : keypoints) {
+    std::cout << "\tx,y: " << keypoint.pt.x << ", " << keypoint.pt.y << std::endl;
+    std::cout << "\tsize: " << keypoint.size << std::endl;
+    std::cout << "\tscale: " << keypoint.octave << std::endl;
+  }
+  cv::drawKeypoints(orbImage, keypoints, featureImage);
+  cv::imwrite(resultPath + "/features.png", featureImage);
   return 0;
 }

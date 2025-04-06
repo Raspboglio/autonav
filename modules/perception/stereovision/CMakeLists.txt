@@ -18,9 +18,10 @@ target_include_directories(stereovision PUBLIC
 
 target_link_libraries(stereovision
     ${OpenCV_LIBS}
-    perception_utils
+    autonav::perception_utils
     colmap_feature
     colmap_controllers
 )
 
+add_library(autonav::stereovision ALIAS stereovision)
 ############################

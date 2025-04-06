@@ -14,3 +14,5 @@ target_link_libraries(perception_utils ${OpenCV_LIBS})
 target_include_directories(perception_utils PUBLIC
     ${OpenCV_INCLUDE_DIRS}
     include)
+
+add_library(autonav::perception_utils ALIAS perception_utils)

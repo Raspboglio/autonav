@@ -1,5 +1,13 @@
 echo "source /opt/ros/jazzy/setup.bash" >> ~root/.bashrc
 
+# Temporary install host vpi
+sudo apt install gnupg
+sudo apt-key adv --fetch-key https://repo.download.nvidia.com/jetson/jetson-ota-public.asc
+sudo apt install -y software-properties-common
+sudo add-apt-repository -y 'deb https://repo.download.nvidia.com/jetson/x86_64/jammy r36.4 main'
+sudo apt update
+sudo apt install libnvvpi3 vpi3-dev vpi3-samples
+
 # Testing COLMAP
 sudo apt-get install \
     git \
